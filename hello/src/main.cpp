@@ -38,23 +38,36 @@ int main(int argc, char *argv[])
     const Ogre::String logsDir("..\\logs\\");
     const Ogre::String cfgDir("..\\cfg\\");
 
+    // Создаем корневой узел приложения. Через данный класс приложение
+    // получает доступ ко всем возможностям движка (системам рендеринга,
+    // окнам, конфигурации и прочим доступным в движке классам)
     Ogre::Root *root = OGRE_NEW Ogre::Root(
                 cfgDir + "hello.cfg",
                 cfgDir + "ogre.cfg",
                 logsDir + "hello.log");
 
+    // Вызываем диалоговое окно (по умолчанию, т.к. без параметров)
+    // для предварительного выбора системы рендеринга, параметров экрана.
+    // Выбранные параметры сохраняются в файл ogre.cfg и будут восстановлены
+    // при повторном запуске приложения
     if (!root->showConfigDialog())
         return -1;
 
-    Ogre::Window *window = root->initialise(true, "Hello, OGRE Next!");
+    // Инициализация системы рендеринга
+    Ogre::Window *window = root->initialise(
+                true,                   // Автоматическое создание окна
+                "Hello, OGRE Next!");   // Заголовок окна
 
     const size_t numThreads = 1u;
 
+    // Создаем менеджер сцены. Он организует выборку объектов и рендериг сцены
     Ogre::SceneManager *sceneManager =
-            root->createSceneManager(Ogre::ST_GENERIC,
-                                     numThreads,
-                                     "Hello");
+            root->createSceneManager(
+                Ogre::ST_GENERIC,       // Тип менеджера сцены
+                numThreads,             // Число рабочих потоков CPU
+                "Hello");               // Необязательный строковый ID
 
+    // Создание камеры (настройка матрицы вида, по сути)
     Ogre::Camera *camera = sceneManager->createCamera("Main Camera");
     camera->setPosition(Ogre::Vector3(0.0, 5.0, 15.0));
     camera->lookAt(Ogre::Vector3(0.0, 0.0, 0.0));
@@ -76,11 +89,13 @@ int main(int argc, char *argv[])
                 workspaceName,
                 true);
 
+    // Создаем обработчик событий окна
     WindowEventListener windowEventListener;
     Ogre::WindowEventUtilities::addWindowEventListener(window, &windowEventListener);
 
     bool bQuit = false;
 
+    // Цикл обработки событий окна и рендеринга
     while (!bQuit)
     {
         Ogre::WindowEventUtilities::messagePump();
@@ -90,6 +105,7 @@ int main(int argc, char *argv[])
             bQuit |= !root->renderOneFrame();
     }
 
+    // Освобождаем ресурсы
     Ogre::WindowEventUtilities::removeWindowEventListener(
                 window,
                 &windowEventListener);
