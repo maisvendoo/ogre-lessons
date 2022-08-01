@@ -91,7 +91,8 @@ int main(int argc, char *argv[])
 
     // Создаем обработчик событий окна
     WindowEventListener windowEventListener;
-    Ogre::WindowEventUtilities::addWindowEventListener(window, &windowEventListener);
+    Ogre::WindowEventUtilities::addWindowEventListener(
+                window, &windowEventListener);
 
     bool bQuit = false;
 
